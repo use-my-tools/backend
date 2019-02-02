@@ -1,0 +1,25 @@
+{
+  "name": "use-my-tools-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "develop": "nodemon index.js",
+    "test": "jest --watch"
+  },
+  "author": "Jonathan Heinz (@jheinz1999)",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "helmet": "^3.15.0",
+    "knex": "^0.16.3",
+    "sqlite3": "^4.0.6"
+  },
+  "devDependencies": {
+    "jest": "^24.0.0",
+    "supertest": "^3.4.2"
+  }
+}

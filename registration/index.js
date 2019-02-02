@@ -12,7 +12,7 @@ const db = knex(knexConfig[environment]);
 
 server.post('/register', async (req, res) => {
 
-  let { username, password, email, image_url } = req.body;
+  let { username, password, email, image_url, firstname, lastname } = req.body;
 
   if (!username) {
 
@@ -24,6 +24,20 @@ server.post('/register', async (req, res) => {
   if (!password) {
 
     res.status(400).json({message: 'no password provided'});
+    return;
+
+  }
+
+  if (!firstname) {
+
+    res.status(400).json({message: 'no first name provided'});
+    return;
+
+  }
+
+  if (!lastname) {
+
+    res.status(400).json({message: 'no last name provided'});
     return;
 
   }
@@ -45,8 +59,8 @@ server.post('/register', async (req, res) => {
 
     password = await bcrypt.hash(password, 1);
 
-    const [ id ] = await db.insert({ username, password, email, image_url }).into('users');
-    const user = await db.select('username', 'id', 'image_url').from('users').where({ id }).first();
+    const [ id ] = await db.insert({ username, password, email, image_url, firstname, lastname }).into('users');
+    const user = await db.select('username', 'id', 'firstname', 'lastname', 'image_url').from('users').where({ id }).first();
     const token = await generateToken(user);
 
     res.status(201).json({

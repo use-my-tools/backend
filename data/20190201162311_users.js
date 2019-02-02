@@ -11,6 +11,8 @@ exports.up = function(knex, Promise) {
     tbl.string('email').unique().notNullable();
     tbl.string('password').notNullable();
     tbl.string('image_url').notNullable();
+    tbl.string('firstname').notNullable();
+    tbl.string('lastname').notNullable();
 
   });
 };

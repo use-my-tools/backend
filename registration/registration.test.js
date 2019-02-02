@@ -22,7 +22,9 @@ describe('user registration', () => {
       const response = await request(server).post('/api/registration/register').send({
         username: 'username',
         password: 'password',
-        email: 'test@test.test'
+        email: 'test@test.test',
+        firstname: 'test',
+        lastname: 'test'
       });
 
       expect(response.status).toBe(201);
@@ -34,7 +36,9 @@ describe('user registration', () => {
       const response = await request(server).post('/api/registration/register').send({
         usernaame: 'username',
         password: 'password',
-        email: 'test@test.test'
+        email: 'test@test.test',
+        firstname: 'test',
+        lastname: 'test'
       });
 
       expect(response.status).toBe(400);
@@ -46,7 +50,9 @@ describe('user registration', () => {
       const response = await request(server).post('/api/registration/register').send({
         username: 'username',
         password: 'password',
-        email: 'test@test.test'
+        email: 'test@test.test',
+        firstname: 'test',
+        lastname: 'test'
       });
 
       expect(response.body.user_id).not.toBe(null);
@@ -61,13 +67,17 @@ describe('user registration', () => {
         username: 'user1',
         password: '1234',
         email: 'bigbird@whitehouse.gov',
-        image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png'
+        image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png',
+        firstname: 'test',
+        lastname: 'test'
       }).into('users');
 
       const response = await request(server).post('/api/registration/register').send({
         username: 'user1',
         password: '1234',
         email: 'bigbird@whitehouse.gov',
+        firstname: 'test',
+        lastname: 'test'
       });
 
       expect(response.status).toBe(400);
@@ -86,7 +96,9 @@ describe('user registration', () => {
         username: 'user1',
         password: bcrypt.hashSync('pass', 1),
         email: 'bigbird@whitehouse.gov',
-        image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png'
+        image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png',
+        firstname: 'test',
+        lastname: 'test'
       }).into('users');
 
     });

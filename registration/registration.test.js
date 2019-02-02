@@ -5,13 +5,13 @@ const bcrypt = require('bcrypt');
 const config = require('../knexfile');
 const server = require('../server');
 
-const db = knex(knexConfig.development);
+const db = knex(config.development);
 
 describe('user registration', () => {
 
-  afterEach(() => {
+  afterEach(async () => {
 
-    db('users').truncate();
+    await db('users').truncate();
 
   });
 
@@ -62,9 +62,9 @@ describe('user registration', () => {
         password: '1234',
         email: 'bigbird@whitehouse.gov',
         image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png'
-      });
+      }).into('users');
 
-      const response = request(server).post('/api/registration/register').send({
+      const response = await request(server).post('/api/registration/register').send({
         username: 'user1',
         password: '1234',
         email: 'bigbird@whitehouse.gov',

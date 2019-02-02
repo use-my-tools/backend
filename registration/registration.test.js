@@ -84,10 +84,10 @@ describe('user registration', () => {
 
       await db.insert({
         username: 'user1',
-        password: bcrypt.hashSync('pass', 2),
+        password: bcrypt.hashSync('pass', 1),
         email: 'bigbird@whitehouse.gov',
         image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png'
-      });
+      }).into('users');
 
     });
 
@@ -110,6 +110,17 @@ describe('user registration', () => {
       });
 
       expect(response.status).toBe(400);
+
+    });
+
+    it('should return status code of 401 if wrong credentials are entered', async () => {
+
+      const response = await request(server).post('/api/registration/login').send({
+        username: 'user1',
+        password: 'passs'
+      });
+
+      expect(response.status).toBe(401);
 
     });
 

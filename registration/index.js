@@ -79,4 +79,57 @@ server.post('/register', async (req, res) => {
 
 });
 
+server.post('/login', async (req, res) => {
+
+  const { username, password } = req.body;
+
+  if (!username) {
+
+    res.status(400).json({message: 'no username provided'});
+    return;
+
+  }
+
+  if (!password) {
+
+    res.status(400).json({message: 'no password provided'});
+    return;
+
+  }
+
+  try {
+
+    const user = await db.select().from('users').where({ username }).first();
+
+    if (user) {
+
+      const correct = await bcrypt.compare(password, user.password);
+
+      if (correct) {
+
+        const token = await generateToken(user);
+
+        res.status(200).json({
+          user_id: user.id,
+          username: user.username,
+          image_url: user.image_url,
+          token
+        });
+
+      }
+
+    }
+
+    res.status(401).json({message: 'Invalid credentials'});
+
+  }
+
+  catch (err) {
+
+    res.status(500);
+
+  }
+
+});
+
 module.exports = server;

@@ -70,7 +70,7 @@ describe('tools CRUD operations', () => {
 
       const response = await request(server).get('/api/tools');
 
-      expect(Array.isArray(response.body)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
 
     });
 

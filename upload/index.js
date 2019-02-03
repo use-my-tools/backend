@@ -1,10 +1,7 @@
 const express = require('express');
 const cloudinary = require('cloudinary');
-const knex = require('knex');
 
-const knexConfig = require('../knexfile');
-const environment = process.env.ENVIRONMENT || 'development';
-const db = knex(knexConfig[environment]);
+const db = require('../data/db');
 
 const server = express.Router();
 

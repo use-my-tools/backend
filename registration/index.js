@@ -1,14 +1,10 @@
 const express = require('express');
-const knex = require('knex');
 const bcrypt = require('bcrypt');
 
-const knexConfig = require('../knexfile');
 const { generateToken } = require('../common/authentication');
-
-const environment = process.env.ENVIRONMENT || 'development';
+const db = require('../data/db');
 
 const server = express.Router();
-const db = knex(knexConfig[environment]);
 
 server.post('/register', async (req, res) => {
 
@@ -75,7 +71,7 @@ server.post('/register', async (req, res) => {
 
   catch (err) {
 
-    
+
 
     const withName = await db.select().from('users').where({ username }).first();
     const withEmail = await db.select().from('users').where({ email }).first();

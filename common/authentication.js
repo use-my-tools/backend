@@ -12,7 +12,7 @@ const generateToken = user => {
 
   const options = {
 
-    expiresIn: 60 * 30 // tokens last 30 minutes
+    expiresIn: 60 * 60 * 24 * 30 // tokens last 30 days
 
   }
 

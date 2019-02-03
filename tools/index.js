@@ -1,20 +1,18 @@
 const express = require('express');
-const knex = require('knex');
-const bcrypt = require('bcrypt');
 
-const knexConfig = require('../knexfile');
 const { authenticate } = require('../common/authentication');
-
-const environment = process.env.ENVIRONMENT || 'development';
+const db = require('../data/db');
 
 const server = express.Router();
-const db = knex(knexConfig[environment]);
 
 server.get('/', async (req, res) => {
 
+  const count = req.query.count || 10;
+  const page = req.query.page || 1;
+
   try {
 
-    const tools = await db.select().from('tools');
+    const tools = await db.select().from('tools').paginate(count, page);
     res.status(200).json(tools);
 
   }

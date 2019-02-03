@@ -1,5 +1,6 @@
 const express = require('express');
 const cloudinary = require('cloudinary');
+const multipart = require("connect-multiparty")();
 
 const db = require('../data/db');
 
@@ -11,11 +12,11 @@ cloudinary.config({
   api_secret: 'nKC01YmIE-tSDADn4YdxiSYpj1Q'
 });
 
-server.post('/image', (req, res) => {
+server.post('/image', multipart, (req, res) => {
 
   cloudinary.v2.uploader.upload(
-  req.files.myImage.path,
-  function(error, result) {
+  req.files.image.path,
+  async function(error, result) {
     if (error) {
 
       res.status(500).json({message: 'Upload failed'});
@@ -23,7 +24,7 @@ server.post('/image', (req, res) => {
     }
     else {
 
-      const [ id ] = db.insert({ url: result.url}).into('images');
+      const [id] = await db.insert({ url: result.url}).into('images');
 
       res.status(201).json({ id });
 

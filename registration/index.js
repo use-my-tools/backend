@@ -12,7 +12,7 @@ const db = knex(knexConfig[environment]);
 
 server.post('/register', async (req, res) => {
 
-  let { username, password, email, image_url, firstname, lastname } = req.body;
+  let { username, password, email, image_id, firstname, lastname } = req.body;
 
   if (!username) {
 
@@ -49,9 +49,9 @@ server.post('/register', async (req, res) => {
 
   }
 
-  if (!image_url) {
+  if (!image_id) {
 
-    image_url = 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png';
+    image_id = 1;
 
   }
 
@@ -59,8 +59,8 @@ server.post('/register', async (req, res) => {
 
     password = await bcrypt.hash(password, 1);
 
-    const [ id ] = await db.insert({ username, password, email, image_url, firstname, lastname }).into('users');
-    const user = await db.select('username', 'id', 'firstname', 'lastname', 'image_url').from('users').where({ id }).first();
+    const [ id ] = await db.insert({ username, password, email, image_id, firstname, lastname }).into('users');
+    const user = await db.select('u.username', 'u.id as user_id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.id', id).first();
     const token = await generateToken(user);
 
     res.status(201).json({
@@ -79,7 +79,7 @@ server.post('/register', async (req, res) => {
 
     if (withName || withEmail) {
 
-      res.status(400).json({duplicateUser: withName !== undefined, duplicateEmail: withName !== undefined});
+      res.status(400).json({duplicateUser: withName !== undefined, duplicateEmail: withEmail !== undefined});
 
     }
 
@@ -113,7 +113,7 @@ server.post('/login', async (req, res) => {
 
   try {
 
-    const user = await db.select().from('users').where({ username }).first();
+    const user = await db.select('u.username', 'u.password', 'u.id as user_id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.username', username).first();
 
     if (user) {
 
@@ -124,7 +124,7 @@ server.post('/login', async (req, res) => {
         const token = await generateToken(user);
 
         res.status(200).json({
-          user_id: user.id,
+          user_id: user.user_id,
           username: user.username,
           image_url: user.image_url,
           token
@@ -139,7 +139,7 @@ server.post('/login', async (req, res) => {
   }
 
   catch (err) {
-
+    console.log(err);
     res.status(500);
 
   }

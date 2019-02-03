@@ -10,7 +10,7 @@ exports.up = function(knex, Promise) {
     tbl.string('username').unique().notNullable();
     tbl.string('email').unique().notNullable();
     tbl.string('password').notNullable();
-    tbl.string('image_url').notNullable();
+    tbl.integer('image_id').notNullable().references('id').inTable('images');
     tbl.string('firstname').notNullable();
     tbl.string('lastname').notNullable();
 

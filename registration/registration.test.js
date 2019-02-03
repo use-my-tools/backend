@@ -15,9 +15,13 @@ describe('user registration', () => {
 
   });
 
+  beforeEach(() => {
+    jest.setTimeout(15000);
+  });
+
   describe('register route', () => {
 
-    it('should return a status code of 201 upon success', async () => {
+    it('should return a status code of 201 upon success', async (done) => {
 
       const response = await request(server).post('/api/registration/register').send({
         username: 'username',
@@ -28,6 +32,8 @@ describe('user registration', () => {
       });
 
       expect(response.status).toBe(201);
+
+      done();
 
     });
 
@@ -67,7 +73,7 @@ describe('user registration', () => {
         username: 'user1',
         password: '1234',
         email: 'bigbird@whitehouse.gov',
-        image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png',
+        image_id: 1,
         firstname: 'test',
         lastname: 'test'
       }).into('users');
@@ -96,7 +102,7 @@ describe('user registration', () => {
         username: 'user1',
         password: bcrypt.hashSync('pass', 1),
         email: 'bigbird@whitehouse.gov',
-        image_url: 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png',
+        image_id: 1,
         firstname: 'test',
         lastname: 'test'
       }).into('users');

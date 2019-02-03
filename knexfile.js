@@ -8,10 +8,10 @@ module.exports = {
       filename: './data/db.sqlite3'
     },
     migrations: {
-      directory: './data'
+      directory: './data/migrations'
     },
     seeds: {
-      directory: './data'
+      directory: './data/seeds'
     },
     useNullAsDefault: true
   },

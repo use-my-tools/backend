@@ -7,23 +7,58 @@ const server = require('../server');
 
 const db = knex(config.development);
 
+let token;
+
 describe('tools CRUD operations', () => {
 
   afterEach(async () => {
 
     await db('tools').truncate();
+    await db('users').truncate();
 
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
+
     jest.setTimeout(15000);
+
+    const resp = await request(server).post('/api/registration/register').send({
+      username: 'user',
+      email: 'email',
+      firstname: 'name',
+      lastname: 'name2',
+      password: 'pass'
+    });
+
+    token = resp.body.token;
+
   });
 
-  describe('get route', () => {
+  describe('get routes', () => {
 
     it('should return a status code of 200 upon success', async (done) => {
 
       const response = await request(server).get('/api/tools');
+
+      expect(response.status).toBe(200);
+
+      done();
+
+    });
+
+    it('should return a status code of 200 upon success for individual tool', async (done) => {
+
+      await request(server).post('/api/tools/').send({
+        name: 'name',
+        category: 'cool stuff',
+        address: '123 sesame street',
+        owner_id: 1,
+        description: 'a cool product',
+        dailyCost: 3.25,
+        deposit: 15
+      }).set('Authorization', token);
+
+      const response = await request(server).get('/api/tools/1');
 
       expect(response.status).toBe(200);
 
@@ -39,34 +74,37 @@ describe('tools CRUD operations', () => {
 
     });
 
+    it('should return an object for individual tools', async () => {
+
+      await request(server).post('/api/tools/').send({
+        name: 'name',
+        category: 'cool stuff',
+        address: '123 sesame street',
+        owner_id: 1,
+        description: 'a cool product',
+        dailyCost: 3.25,
+        deposit: 15
+      }).set('Authorization', token);
+
+      const response = await request(server).get('/api/tools/1');
+
+      expect(typeof response.body).toBe('object');
+
+    });
+
+    it('should return 404 if tool is not found', async () => {
+
+      const response = await request(server).get('/api/tools/100');
+
+      expect(response.status).toBe(404);
+
+    });
+
   });
 
   describe('post route', () => {
 
-    let token;
-
-    beforeEach(() => {
-
-      const resp = await request(server).post('/api/registration/register', {
-        username: 'user123',
-        password: 'pass',
-        image_id: 0,
-        email: 'test@test.test',
-        firstname: 'test',
-        lastname: 'test'
-      });
-
-      token = resp.body.token;
-
-    });
-
-    afterEach(() => {
-
-      db('users').truncate();
-
-    });
-
-    it('should return status code of 200 upon success', async () => {
+    it('should return status code of 201 upon success', async () => {
 
       const response = await request(server).post('/api/tools/').send({
         name: 'name',
@@ -78,7 +116,7 @@ describe('tools CRUD operations', () => {
         deposit: 15
       }).set('Authorization', token);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
 
     });
 

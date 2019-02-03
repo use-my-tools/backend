@@ -60,12 +60,13 @@ server.post('/register', async (req, res) => {
     password = await bcrypt.hash(password, 1);
 
     const [ id ] = await db.insert({ username, password, email, image_id, firstname, lastname }).into('users');
-    const user = await db.select('u.username', 'u.id as user_id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.id', id).first();
+    const user = await db.select('u.username', 'u.id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.id', id).first();
+
     const token = await generateToken(user);
 
     res.status(201).json({
       username: user.username,
-      user_id: user.user_id,
+      user_id: user.id,
       image_url: user.image_url,
       token
     });
@@ -73,6 +74,8 @@ server.post('/register', async (req, res) => {
   }
 
   catch (err) {
+
+    
 
     const withName = await db.select().from('users').where({ username }).first();
     const withEmail = await db.select().from('users').where({ email }).first();
@@ -139,7 +142,7 @@ server.post('/login', async (req, res) => {
   }
 
   catch (err) {
-    console.log(err);
+
     res.status(500);
 
   }

@@ -12,7 +12,7 @@ server.get('/', async (req, res) => {
 
   try {
 
-    const tools = await db.select().from('tools').paginate(count, page);
+    const tools = await db.select().from('tools').paginate(count, page, true);
     res.status(200).json(tools);
 
   }

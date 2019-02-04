@@ -80,7 +80,7 @@ server.post('/register', async (req, res) => {
 
     if (withName || withEmail) {
 
-      res.status(400).json({duplicateUser: withName !== undefined, duplicateEmail: withEmail !== undefined});
+      res.status(400).json({message: 'Duplicate name or email!', duplicateUser: withName !== undefined, duplicateEmail: withEmail !== undefined});
 
     }
 

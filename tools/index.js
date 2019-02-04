@@ -40,12 +40,16 @@ server.get('/:id', async (req, res) => {
 
     }
 
+    const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id');
+    tool.images = images;
+
     res.status(200).json(tool);
 
   }
 
   catch (err) {
 
+    console.log(err);
     res.status(500).json({message: 'internal server error'});
 
   }

@@ -15,6 +15,8 @@ server.get('/', async (req, res) => {
     //const tools = await db.select('t.*', 'i.url').from('tools as t').join('tool_images as ti', 'ti.tool_id', 't.id').join('images as i', 'ti.img_id', 'i.id').paginate(count, page, true);
     const tools = await db.select().from('tools').paginate(count, page, true);
 
+    tools.currentPage = Number(tools.currentPage);
+
     const results = tools.data.map(async (tool) => {
 
       const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
@@ -117,7 +119,9 @@ server.post('/', authenticate, async (req, res) => {
       rating: 0.0
     }).into('tools');
 
-    const tool = await db.select().from('tools').paginate(10, 1, true);;
+    const tool = await db.select().from('tools').paginate(10, 1, true);
+
+    tool.currentPage = Number(tool.currentPage);
 
     res.status(201).json(tool);
 

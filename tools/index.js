@@ -12,8 +12,19 @@ server.get('/', async (req, res) => {
 
   try {
 
+    //const tools = await db.select('t.*', 'i.url').from('tools as t').join('tool_images as ti', 'ti.tool_id', 't.id').join('images as i', 'ti.img_id', 'i.id').paginate(count, page, true);
     const tools = await db.select().from('tools').paginate(count, page, true);
-    res.status(200).json(tools);
+
+    const results = tools.data.map(async (tool) => {
+
+      const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
+      tool.images = images;
+
+      return tool;
+
+    });
+
+    Promise.all(results).then(completed => res.status(200).json(completed));
 
   }
 
@@ -40,7 +51,7 @@ server.get('/:id', async (req, res) => {
 
     }
 
-    const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id');
+    const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: id});
     tool.images = images;
 
     res.status(200).json(tool);

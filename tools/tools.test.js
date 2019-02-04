@@ -132,6 +132,8 @@ describe('tools CRUD operations', () => {
         deposit: 15
       }).set('Authorization', token);
 
+      console.log(response.data);
+
       expect(response.status).toBe(400);
 
     });

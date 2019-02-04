@@ -86,7 +86,7 @@ server.post('/', authenticate, async (req, res) => {
 
   try {
 
-    await db.insert({
+    const [id] = await db.insert({
       name,
       brand,
       category,
@@ -99,7 +99,9 @@ server.post('/', authenticate, async (req, res) => {
       rating: 0.0
     }).into('tools');
 
-    res.status(201).json({message: 'created'});
+    const tool = await db.select().from('tools').where({ id }).first();
+
+    res.status(201).json(tool);
 
   }
 

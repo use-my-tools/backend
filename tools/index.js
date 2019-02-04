@@ -5,6 +5,28 @@ const db = require('../data/db');
 
 const server = express.Router();
 
+const returnAllTools = async res => {
+
+  const tools = await db.select().from('tools').paginate(10, 1, true);
+
+  tools.currentPage = Number(tools.currentPage);
+
+  const results = tools.data.map(async (tool) => {
+
+    const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
+    tool.images = images;
+
+    return tool;
+
+  });
+
+  Promise.all(results).then(completed => {
+    tools.data = completed;
+    res.status(200).json(tools);
+  });
+
+}
+
 server.get('/', async (req, res) => {
 
   const count = req.query.count || 10;
@@ -119,11 +141,7 @@ server.post('/', authenticate, async (req, res) => {
       rating: 0.0
     }).into('tools');
 
-    const tool = await db.select().from('tools').paginate(10, 1, true);
-
-    tool.currentPage = Number(tool.currentPage);
-
-    res.status(201).json(tool);
+    returnAllTools(res);
 
   }
 
@@ -136,28 +154,122 @@ server.post('/', authenticate, async (req, res) => {
 
 });
 
-server.delete('/:id', async (req, res) => {
+server.delete('/:id', authenticate, async (req, res) => {
 
   const { id } = req.params;
+  const user_id = req.decoded.subject;
 
   try {
 
-    const exists = await db.select().from('tools').where({ id });
+    const exists = await db.select().from('tools').where({ id }).first();
 
-    if (!exists.length) {
+    if (!exists) {
 
       res.status(404).json({message: 'tool doesnt exist'});
       return;
 
     }
 
+    if (!exists.owner_id === user_id) {
+
+      res.status(403).json({message: 'You cannot delete someone elses tool'});
+      return;
+
+    }
+
     await db.delete().from('tools').where({ id });
 
-    const tool = await db.select().from('tools').paginate(10, 1, true);
+    returnAllTools(res);
 
-    tool.currentPage = Number(tool.currentPage);
+  }
 
-    res.status(200).json(tool);
+  catch (err) {
+
+    res.status(500).json({message: 'internal error'});
+
+  }
+
+});
+
+server.put('/:id', authenticate, async (req, res) => {
+
+  const { id } = req.params;
+  const user_id = req.decoded.subject;
+
+  let { name, brand, category, address, description, dailyCost, deposit } = req.body;
+
+  try {
+
+    const tool = await db.select().from('tools').where({ id });
+
+    if (!tool.length) {
+
+      res.status(404).json({message: 'Tool does not exist'});
+      return;
+
+    }
+
+    if (!name && !brand && !category && !address && !description && !dailyCost && !deposit) {
+
+      res.status(400).json({message: 'No body provided!'});
+      return;
+
+    }
+
+    if (!name) {
+
+      name = tool.name;
+
+    }
+
+    if (!brand) {
+
+      brand = tool.brand;
+
+    }
+
+    if (!category) {
+
+      category = tool.category;
+
+    }
+
+    if (!address) {
+
+      address = tool.address;
+
+    }
+
+    if (!description) {
+
+      description = tool.description;
+
+    }
+
+    if (!dailyCost) {
+
+      dailyCost = tool.dailyCost;
+
+    }
+
+    if (!deposit) {
+
+      deposit = tool.deposit;
+
+    }
+
+    console.log(user_id);
+
+    if (user_id !== tool.owner_id) {
+
+      res.status(403).json({message: 'You cannot edit someone elses tool'});
+      return;
+
+    }
+
+    await db.update({ name, brand, category, address, description, dailyCost, deposit }).from('tools').where({ id });
+
+    returnAllTools(res);
 
   }
 

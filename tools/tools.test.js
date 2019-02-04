@@ -105,7 +105,7 @@ describe('tools CRUD operations', () => {
 
   describe('post route', () => {
 
-    it('should return status code of 201 upon success', async () => {
+    it('should return status code of 200 upon success', async () => {
 
       const response = await request(server).post('/api/tools/').send({
         name: 'name',
@@ -117,7 +117,7 @@ describe('tools CRUD operations', () => {
         deposit: 15
       }).set('Authorization', token);
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
 
     });
 
@@ -163,15 +163,17 @@ describe('tools CRUD operations', () => {
         name: 'name',
         category: 'cool stuff',
         address: '123 sesame street',
-        owner_id: 1,
+        owner_id,
         description: 'a cool product',
         dailyCost: 3.25,
         deposit: 15
       }).set('Authorization', token);
 
-      await request(server).delete('/api/tools/1');
+      await request(server).delete('/api/tools/1').set('Authorization', token);
 
       const response = await request(server).get('/api/tools/1');
+
+      console.log(response.data);
 
       expect(response.status).toBe(404);
 
@@ -183,13 +185,13 @@ describe('tools CRUD operations', () => {
         name: 'name',
         category: 'cool stuff',
         address: '123 sesame street',
-        owner_id: 1,
+        owner_id,
         description: 'a cool product',
         dailyCost: 3.25,
         deposit: 15
       }).set('Authorization', token);
 
-      const response = await request(server).delete('/api/tools/1');
+      const response = await request(server).delete('/api/tools/1').set('Authorization', token);
 
       expect(response.status).toBe(200);
 
@@ -201,13 +203,13 @@ describe('tools CRUD operations', () => {
         name: 'name',
         category: 'cool stuff',
         address: '123 sesame street',
-        owner_id: 1,
+        owner_id,
         description: 'a cool product',
         dailyCost: 3.25,
         deposit: 15
       }).set('Authorization', token);
 
-      const response = await request(server).delete('/api/tools/123');
+      const response = await request(server).delete('/api/tools/123').set('Authorization', token);
 
       expect(response.status).toBe(404);
 

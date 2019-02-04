@@ -7,7 +7,7 @@ const server = require('../server');
 
 const db = knex(config.development);
 
-let token;
+let token, owner_id;
 
 describe('tools CRUD operations', () => {
 
@@ -31,6 +31,7 @@ describe('tools CRUD operations', () => {
     });
 
     token = resp.body.token;
+    owner_id = resp.body.user_id;
 
   });
 
@@ -132,8 +133,6 @@ describe('tools CRUD operations', () => {
         deposit: 15
       }).set('Authorization', token);
 
-      console.log(response.data);
-
       expect(response.status).toBe(400);
 
     });
@@ -173,6 +172,56 @@ describe('tools CRUD operations', () => {
       await request(server).delete('/api/tools/1');
 
       const response = await request(server).get('/api/tools/1');
+
+      expect(response.status).toBe(404);
+
+    });
+
+  });
+
+  describe('put route', () => {
+
+    it('should update tool name', async () => {
+
+      await request(server).post('/api/tools/').send({
+        name: 'name',
+        category: 'cool stuff',
+        address: '123 sesame street',
+        owner_id,
+        description: 'a cool product',
+        dailyCost: 3.25,
+        deposit: 15
+      }).set('Authorization', token);
+
+      await request(server).put('/api/tools/1').send({
+        name: 'new name'
+      }).set('Authorization', token);
+
+      const response = await request(server).get('/api/tools/1');
+
+      expect(response.body.name).toBe('new name');
+
+    });
+
+    it('should return 401 if user is not logged in', async () => {
+
+      await request(server).post('/api/tools/').send({
+        name: 'name',
+        category: 'cool stuff',
+        address: '123 sesame street',
+        owner_id: 100,
+        description: 'a cool product',
+        dailyCost: 3.25,
+        deposit: 15
+      }).set('Authorization', token);
+
+      await request(server).put('/api/tools/1').send({
+        name: 'new name'
+      }).set('Authorization', token);
+
+      const response = await request(server).get('/api/tools/1');
+
+      expect(response.status).toBe(401);
 
     });
 

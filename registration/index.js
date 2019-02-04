@@ -64,6 +64,8 @@ server.post('/register', async (req, res) => {
       username: user.username,
       user_id: user.id,
       image_url: user.image_url,
+      firstname,
+      lastname,
       token
     });
 
@@ -126,6 +128,8 @@ server.post('/login', async (req, res) => {
           user_id: user.user_id,
           username: user.username,
           image_url: user.image_url,
+          firstname,
+          lastname,
           token
         });
 

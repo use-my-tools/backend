@@ -17,23 +17,16 @@ module.exports = {
   },
 
   production: {
-    client: 'pg',
-    connection: {
-      url: 'postgres://uqdgfnmjjnzlxr:a393425c2d101d92cad460ba2b0fc0ed534aa61becf34a1209c9fc5bc5767252@ec2-107-21-99-237.compute-1.amazonaws.com:5432/damliqtl2i3jg6',
-      database: 'postgres://uqdgfnmjjnzlxr:a393425c2d101d92cad460ba2b0fc0ed534aa61becf34a1209c9fc5bc5767252@ec2-107-21-99-237.compute-1.amazonaws.com:5432/damliqtl2i3jg6',
-    },
-    migrations: {
-      directory: './data/migrations',
-      tableName: 'knex_migrations'
-    },
-    seeds: {
-      directory: './data/seeds'
-    },
+    client: 'postgresql',
+    connection: 'postgres://faouivfh:4k6zSdj9qBm4Sl6iUr2YhXvEtscfJcLY@stampy.db.elephantsql.com:5432/faouivfh',
     pool: {
       min: 2,
       max: 10
     },
-    useNullAsDefault: true
+    migrations: {
+      tableName: 'knex_migrations',
+      directory: './data/migrations'
+    }
   }
 
 };

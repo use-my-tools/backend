@@ -177,6 +177,42 @@ describe('tools CRUD operations', () => {
 
     });
 
+    it('should give status of 200', async () => {
+
+      await request(server).post('/api/tools/').send({
+        name: 'name',
+        category: 'cool stuff',
+        address: '123 sesame street',
+        owner_id: 1,
+        description: 'a cool product',
+        dailyCost: 3.25,
+        deposit: 15
+      }).set('Authorization', token);
+
+      const response = await request(server).delete('/api/tools/1');
+
+      expect(response.status).toBe(200);
+
+    });
+
+    it('should give status of 404 if tool does not exist', async () => {
+
+      await request(server).post('/api/tools/').send({
+        name: 'name',
+        category: 'cool stuff',
+        address: '123 sesame street',
+        owner_id: 1,
+        description: 'a cool product',
+        dailyCost: 3.25,
+        deposit: 15
+      }).set('Authorization', token);
+
+      const response = await request(server).delete('/api/tools/123');
+
+      expect(response.status).toBe(404);
+
+    });
+
   });
 
   describe('put route', () => {

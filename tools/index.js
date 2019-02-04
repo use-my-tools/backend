@@ -136,24 +136,37 @@ server.post('/', authenticate, async (req, res) => {
 
 });
 
-/*server.delete('/:id', async (req, res) => {
+server.delete('/:id', async (req, res) => {
 
   const { id } = req.params;
 
   try {
 
+    const exists = await db.select().from('tools').where({ id });
+
+    if (!exists.length) {
+
+      res.status(404).json({message: 'tool doesnt exist'});
+      return;
+
+    }
+
     await db.delete().from('tools').where({ id });
 
-    const data =
+    const tool = await db.select().from('tools').paginate(10, 1, true);
+
+    tool.currentPage = Number(tool.currentPage);
+
+    res.status(200).json(tool);
 
   }
 
   catch (err) {
 
-
+    res.status(500).json({message: 'internal error'});
 
   }
 
-});*/
+});
 
 module.exports = server;

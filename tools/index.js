@@ -136,4 +136,24 @@ server.post('/', authenticate, async (req, res) => {
 
 });
 
+/*server.delete('/:id', async (req, res) => {
+
+  const { id } = req.params;
+
+  try {
+
+    await db.delete().from('tools').where({ id });
+
+    const data =
+
+  }
+
+  catch (err) {
+
+
+
+  }
+
+});*/
+
 module.exports = server;

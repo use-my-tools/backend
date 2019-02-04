@@ -61,4 +61,4 @@ typings/
 .next
 
 # database
-data/db.js
+data/db.sqlite3

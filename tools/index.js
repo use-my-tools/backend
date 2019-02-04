@@ -200,9 +200,9 @@ server.put('/:id', authenticate, async (req, res) => {
 
   try {
 
-    const tool = await db.select().from('tools').where({ id });
+    const tool = await db.select().from('tools').where({ id }).first();
 
-    if (!tool.length) {
+    if (!tool) {
 
       res.status(404).json({message: 'Tool does not exist'});
       return;
@@ -258,7 +258,7 @@ server.put('/:id', authenticate, async (req, res) => {
 
     }
 
-    console.log(user_id);
+    console.log(user_id, tool.owner_id);
 
     if (user_id !== tool.owner_id) {
 
@@ -266,6 +266,8 @@ server.put('/:id', authenticate, async (req, res) => {
       return;
 
     }
+
+    console.log(name);
 
     await db.update({ name, brand, category, address, description, dailyCost, deposit }).from('tools').where({ id });
 

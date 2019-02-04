@@ -241,7 +241,7 @@ describe('tools CRUD operations', () => {
 
     });
 
-    it('should return 401 if user is not logged in', async () => {
+    it('should return 403 if user is not logged in', async () => {
 
       await request(server).post('/api/tools/').send({
         name: 'name',
@@ -253,13 +253,11 @@ describe('tools CRUD operations', () => {
         deposit: 15
       }).set('Authorization', token);
 
-      await request(server).put('/api/tools/1').send({
+      const response = await request(server).put('/api/tools/1').send({
         name: 'new name'
       }).set('Authorization', token);
 
-      const response = await request(server).get('/api/tools/1');
-
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(403);
 
     });
 

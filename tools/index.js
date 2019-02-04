@@ -24,7 +24,10 @@ server.get('/', async (req, res) => {
 
     });
 
-    Promise.all(results).then(completed => res.status(200).json(completed));
+    Promise.all(results).then(completed => {
+      tools.data = completed;
+      res.status(200).json(tools);
+    });
 
   }
 

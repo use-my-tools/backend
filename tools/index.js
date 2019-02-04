@@ -114,7 +114,7 @@ server.post('/', authenticate, async (req, res) => {
       rating: 0.0
     }).into('tools');
 
-    const tool = await db.select().from('tools').where({ id }).first();
+    const tool = await db.select().from('tools');
 
     res.status(201).json(tool);
 

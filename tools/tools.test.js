@@ -156,4 +156,26 @@ describe('tools CRUD operations', () => {
 
   });
 
+  describe('delete route', () => {
+
+    it('should delete the tool with the specified id', async () => {
+
+      await request(server).post('/api/tools/').send({
+        name: 'name',
+        category: 'cool stuff',
+        address: '123 sesame street',
+        owner_id: 1,
+        description: 'a cool product',
+        dailyCost: 3.25,
+        deposit: 15
+      }).set('Authorization', token);
+
+      await request(server).delete('/api/tools/1');
+
+      const response = await request(server).get('/api/tools/1');
+
+    });
+
+  });
+
 });

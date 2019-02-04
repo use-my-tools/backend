@@ -7,7 +7,7 @@ const server = express.Router();
 
 const returnAllTools = async res => {
 
-  const tools = await db.select().from('tools').paginate(10, 1, true);
+  const tools = await db.select().from('tools').orderBy('id', 'desc').paginate(10, 1, true);
 
   tools.currentPage = Number(tools.currentPage);
 
@@ -35,7 +35,7 @@ server.get('/', async (req, res) => {
   try {
 
     //const tools = await db.select('t.*', 'i.url').from('tools as t').join('tool_images as ti', 'ti.tool_id', 't.id').join('images as i', 'ti.img_id', 'i.id').paginate(count, page, true);
-    const tools = await db.select().from('tools').paginate(count, page, true);
+    const tools = await db.select().from('tools').orderBy('id', 'desc').paginate(count, page, true);
 
     tools.currentPage = Number(tools.currentPage);
 

@@ -73,8 +73,6 @@ server.post('/register', async (req, res) => {
 
   catch (err) {
 
-
-
     const withName = await db.select().from('users').where({ username }).first();
     const withEmail = await db.select().from('users').where({ email }).first();
 

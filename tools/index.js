@@ -7,7 +7,7 @@ const server = express.Router();
 
 const returnAllTools = async (req, res) => {
 
-  const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
+  let tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
 
   const results = tools.map(async (tool) => {
 

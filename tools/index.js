@@ -65,9 +65,6 @@ server.get('/', async (req, res) => {
 
 server.get('/user/:id', async (req, res) => {
 
-  const count = req.query.count || 10;
-  const page = req.query.page || 1;
-
   const { id } = req.params;
 
   try {
@@ -224,7 +221,21 @@ server.delete('/:id', authenticate, async (req, res) => {
 
     await db.delete().from('tools').where({ id });
 
-    returnAllTools(res);
+    const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
+
+    const results = tools.map(async (tool) => {
+
+      const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
+      tool.images = images;
+
+      return tool;
+
+    });
+
+    Promise.all(results).then(completed => {
+      tools.data = completed;
+      res.status(200).json(tools);
+    });
 
   }
 

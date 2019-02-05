@@ -11,8 +11,6 @@ const returnAllTools = async (req, res) => {
 
     let tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.user.id);
 
-    console.log('USERID',req.decoded.user.id);
-
     const results = tools.map(async (tool) => {
 
       const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});

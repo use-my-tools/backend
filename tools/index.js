@@ -81,7 +81,7 @@ server.get('/user/:id', async (req, res) => {
 
     }
 
-    const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', 1);
+    const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', id);
 
     const results = tools.data.map(async (tool) => {
 

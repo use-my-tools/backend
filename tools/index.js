@@ -70,34 +70,44 @@ server.get('/user/:id', async (req, res) => {
 
   const { id } = req.params;
 
-  const user = await db.select().from('users').where({ id }).first();
+  try {
 
-  if (!user) {
+    const user = await db.select().from('users').where({ id }).first();
 
-    res.status(404).json({message: 'User not found!'});
-    return;
+    if (!user) {
+
+      res.status(404).json({message: 'User not found!'});
+      return;
+
+    }
+
+    const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', 1).paginate(count, page, true);
+
+    res.status(200).json(tools);
+
+    tools.currentPage = Number(tools.currentPage);
+
+    const results = tools.data.map(async (tool) => {
+
+      const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
+      tool.images = images;
+
+      return tool;
+
+    });
+
+    Promise.all(results).then(completed => {
+      tools.data = completed;
+      res.status(200).json(tools);
+    });
 
   }
 
-  const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', 1).paginate(count, page, true);
+  catch (err) {
 
-  res.status(200).json(tools);
+    res.status(500).json({message: 'internal server error'});
 
-  tools.currentPage = Number(tools.currentPage);
-
-  const results = tools.data.map(async (tool) => {
-
-    const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
-    tool.images = images;
-
-    return tool;
-
-  });
-
-  Promise.all(results).then(completed => {
-    tools.data = completed;
-    res.status(200).json(tools);
-  });
+  }
 
 });
 

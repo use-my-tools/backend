@@ -30,7 +30,7 @@ const returnAllTools = async (req, res) => {
   catch (err) {
 
     console.log(err);
-    res.status(500).json({message: err});
+    res.status(500).json({message: err.message});
 
   }
 
@@ -199,7 +199,7 @@ server.post('/', authenticate, async (req, res) => {
   catch (err) {
 
     console.log(err);
-    res.status(500).json({message: err});
+    res.status(500).json({message: err.message});
 
   }
 
@@ -241,8 +241,8 @@ server.delete('/:id', authenticate, async (req, res) => {
 
   catch (err) {
 
-    console.log(err);
-    res.status(500).json({message: err});
+    console.log(err.message);
+    res.status(500).json({message: err.message});
 
   }
 

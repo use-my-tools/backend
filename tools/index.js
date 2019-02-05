@@ -19,7 +19,7 @@ const returnAllTools = async (req, res) => {
   });
 
   Promise.all(results).then(completed => {
-    tools.data = completed;
+    tools = completed;
     res.status(200).json(tools);
   });
 
@@ -168,7 +168,7 @@ server.post('/', authenticate, async (req, res) => {
 
   try {
 
-    const id = await db.insert({
+    await db.insert({
       name,
       brand,
       category,

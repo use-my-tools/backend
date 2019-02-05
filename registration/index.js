@@ -55,8 +55,8 @@ server.post('/register', async (req, res) => {
 
     password = await bcrypt.hash(password, 1);
 
-    const [ id ] = await db.insert({ username, password, email, image_id, firstname, lastname }).into('users');
-    const user = await db.select('u.username', 'u.id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.id', id).first();
+    await db.insert({ username, password, email, image_id, firstname, lastname }).into('users');
+    const user = await db.select('u.username', 'u.id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.username', username).first();
 
     const token = await generateToken(user);
 
@@ -73,11 +73,15 @@ server.post('/register', async (req, res) => {
 
   catch (err) {
 
+    console.log(err);
+
     const withName = await db.select().from('users').where({ username }).first();
     const withEmail = await db.select().from('users').where({ email }).first();
 
     if (withName || withEmail) {
 
+      console.log(withName);
+      console.log(withEmail);
       res.status(400).json({message: 'Duplicate name or email!', duplicateUser: withName !== undefined, duplicateEmail: withEmail !== undefined});
 
     }

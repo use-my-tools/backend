@@ -225,8 +225,7 @@ server.delete('/:id', authenticate, async (req, res) => {
 
     if (exists.owner_id !== user_id) {
 
-      console.log('403');
-      res.status(403).json({message: 'You cannot delete someone elses tool'});
+      res.status(403).json({message: `You cannot delete someone elses tool. Your id: ${user_id} their id: ${exist.owner_id}`});
       return;
 
     }

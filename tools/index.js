@@ -83,8 +83,6 @@ server.get('/user/:id', async (req, res) => {
 
     const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', 1).paginate(count, page, true);
 
-    res.status(200).json(tools);
-
     tools.currentPage = Number(tools.currentPage);
 
     const results = tools.data.map(async (tool) => {

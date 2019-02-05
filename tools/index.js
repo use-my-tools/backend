@@ -83,7 +83,7 @@ server.get('/user/:id', async (req, res) => {
 
     const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', id);
 
-    const results = tools.data.map(async (tool) => {
+    const results = tools.map(async (tool) => {
 
       const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
       tool.images = images;
@@ -93,7 +93,7 @@ server.get('/user/:id', async (req, res) => {
     });
 
     Promise.all(results).then(completed => {
-      tools.data = completed;
+      tools = completed;
       res.status(200).json(tools);
     });
 
@@ -101,6 +101,7 @@ server.get('/user/:id', async (req, res) => {
 
   catch (err) {
 
+    console.log(err);
     res.status(500).json({message: 'internal server error'});
 
   }

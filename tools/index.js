@@ -7,11 +7,9 @@ const server = express.Router();
 
 const returnAllTools = async res => {
 
-  const tools = await db.select().from('tools').orderBy('id', 'desc').paginate(10, 1, true);
+  const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
 
-  tools.currentPage = Number(tools.currentPage);
-
-  const results = tools.data.map(async (tool) => {
+  const results = tools.map(async (tool) => {
 
     const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
     tool.images = images;
@@ -24,7 +22,7 @@ const returnAllTools = async res => {
     tools.data = completed;
     res.status(200).json(tools);
   });
-
+  
 }
 
 server.get('/', async (req, res) => {
@@ -221,21 +219,7 @@ server.delete('/:id', authenticate, async (req, res) => {
 
     await db.delete().from('tools').where({ id });
 
-    const tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
-
-    const results = tools.map(async (tool) => {
-
-      const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
-      tool.images = images;
-
-      return tool;
-
-    });
-
-    Promise.all(results).then(completed => {
-      tools.data = completed;
-      res.status(200).json(tools);
-    });
+    returnAllTools(res);
 
   }
 

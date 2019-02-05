@@ -7,21 +7,32 @@ const server = express.Router();
 
 const returnAllTools = async (req, res) => {
 
-  let tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
+  try {
 
-  const results = tools.map(async (tool) => {
+    let tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
 
-    const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
-    tool.images = images;
+    const results = tools.map(async (tool) => {
 
-    return tool;
+      const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
+      tool.images = images;
 
-  });
+      return tool;
 
-  Promise.all(results).then(completed => {
-    tools = completed;
-    res.status(200).json(tools);
-  });
+    });
+
+    Promise.all(results).then(completed => {
+      tools = completed;
+      res.status(200).json(tools);
+    });
+
+  }
+
+  catch (err) {
+
+    console.log(err);
+    res.status(500).json({message: 'internal server error'});
+
+  }
 
 }
 
@@ -210,14 +221,20 @@ server.delete('/:id', authenticate, async (req, res) => {
 
     }
 
+    console.log('test');
+
     if (!exists.owner_id === user_id) {
 
+      console.log('403');
       res.status(403).json({message: 'You cannot delete someone elses tool'});
       return;
 
     }
 
+    await db.delete().from('tool_images').where({tool_id: id});
     await db.delete().from('tools').where({ id });
+
+    console.log('before tool return');
 
     returnAllTools(req, res);
 
@@ -225,6 +242,7 @@ server.delete('/:id', authenticate, async (req, res) => {
 
   catch (err) {
 
+    console.log(err);
     res.status(500).json({message: 'internal error'});
 
   }
@@ -317,6 +335,7 @@ server.put('/:id', authenticate, async (req, res) => {
 
   catch (err) {
 
+    console.log(err);
     res.status(500).json({message: 'internal error'});
 
   }

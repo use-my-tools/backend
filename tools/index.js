@@ -199,7 +199,7 @@ server.post('/', authenticate, async (req, res) => {
   catch (err) {
 
     console.log(err);
-    res.status(500).json({message: 'internal error'});
+    res.status(500).json({message: err});
 
   }
 
@@ -223,7 +223,7 @@ server.delete('/:id', authenticate, async (req, res) => {
 
     console.log('test');
 
-    if (!exists.owner_id === user_id) {
+    if (exists.owner_id !== user_id) {
 
       console.log('403');
       res.status(403).json({message: 'You cannot delete someone elses tool'});
@@ -243,7 +243,7 @@ server.delete('/:id', authenticate, async (req, res) => {
   catch (err) {
 
     console.log(err);
-    res.status(500).json({message: 'internal error'});
+    res.status(500).json({message: err});
 
   }
 

@@ -173,7 +173,7 @@ server.post('/', authenticate, async (req, res) => {
 
   try {
 
-    const [id] = await db.insert({
+    const id = await db.insert({
       name,
       brand,
       category,

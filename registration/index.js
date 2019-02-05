@@ -84,6 +84,7 @@ server.post('/register', async (req, res) => {
 
     else {
 
+      console.log(err);
       res.status(500).json({message: 'internal server error'});
 
     }

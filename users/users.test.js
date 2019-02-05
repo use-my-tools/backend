@@ -21,7 +21,7 @@ describe('users endpoints', () => {
     });
 
     token = data.body.token;
-    user_id = data.body.user_id;
+    user_id = data.bodyid;
 
   });
 
@@ -111,7 +111,7 @@ describe('users endpoints', () => {
 
       const response = await request(server).get('/api/users/' + user_id).set('Authorization', token);
 
-      expect(response.body.url).not.toBe(link1);
+      expect(response.body.url).toBe(link1);
 
     });
 

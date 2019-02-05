@@ -73,22 +73,17 @@ server.post('/register', async (req, res) => {
 
   catch (err) {
 
-    console.log(err);
-
     const withName = await db.select().from('users').where({ username }).first();
     const withEmail = await db.select().from('users').where({ email }).first();
 
     if (withName || withEmail) {
 
-      console.log(withName);
-      console.log(withEmail);
       res.status(400).json({message: 'Duplicate name or email!', duplicateUser: withName !== undefined, duplicateEmail: withEmail !== undefined});
 
     }
 
     else {
 
-      console.log(err);
       res.status(500).json({message: 'internal server error'});
 
     }

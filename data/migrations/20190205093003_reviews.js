@@ -4,6 +4,8 @@ exports.up = function(knex, Promise) {
 
     tbl.increments();
 
+    tbl.integer('by_user').references('id').inTable('users');
+    tbl.integer('for_user').references('id').inTable('users');
     tbl.integer('stars').notNullable();
     tbl.string('review');
 

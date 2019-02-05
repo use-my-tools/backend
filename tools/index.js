@@ -210,7 +210,7 @@ server.post('/', authenticate, async (req, res) => {
 server.delete('/:id', authenticate, async (req, res) => {
 
   const { id } = req.params;
-  const user_id = req.decoded.subject;
+  const user_id = req.decoded.user.id;
 
   try {
 
@@ -226,6 +226,8 @@ server.delete('/:id', authenticate, async (req, res) => {
     console.log('test');
 
     console.log(req.decoded);
+
+    console.log('USERID',req.decoded.user.id);
 
     if (exists.owner_id !== user_id) {
 
@@ -319,16 +321,12 @@ server.put('/:id', authenticate, async (req, res) => {
 
     }
 
-    console.log(user_id, tool.owner_id);
-
     if (user_id !== tool.owner_id) {
 
       res.status(403).json({message: 'You cannot edit someone elses tool'});
       return;
 
     }
-
-    console.log(name);
 
     await db.update({ name, brand, category, address, description, dailyCost, deposit }).from('tools').where({ id });
 

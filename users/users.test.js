@@ -20,8 +20,8 @@ describe('users endpoints', () => {
       image_id: 1
     });
 
-    token = data.response.token;
-    user_id = data.response.user_id;
+    token = data.body.token;
+    user_id = data.body.user_id;
 
   });
 
@@ -37,7 +37,7 @@ describe('users endpoints', () => {
 
       const response = await request(server).get('/api/users').set('Authorization', token);
 
-      expect(Array.isArray(response.body)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
 
     });
 
@@ -101,19 +101,23 @@ describe('users endpoints', () => {
 
     it('should update user image', async () => {
 
-      request(server).put('/api/users/' + user_id).send({
+      const resp1 = await request(server).get('/api/users/' + user_id).set('Authorization', token);
+
+      const link1 = resp1.body.url;
+
+      await request(server).put('/api/users/' + user_id).send({
         image_id: 2
       }).set('Authorization', token);
 
-      const response = request(server).get('/api/users/' + user_id);
+      const response = await request(server).get('/api/users/' + user_id).set('Authorization', token);
 
-      expect(response.data.image_id).toBe(2);
+      expect(response.body.url).not.toBe(link1);
 
     });
 
     it('should return 404 if not found', async () => {
 
-      const response = request(server).put('/api/users/232').send({
+      const response = await request(server).put('/api/users/232').send({
         image_id: 2
       }).set('Authorization', token);
 
@@ -123,7 +127,7 @@ describe('users endpoints', () => {
 
     it('should return 404 if not authorized', async () => {
 
-      const response = request(server).put('/api/users/' + user_id).send({
+      const response = await request(server).put('/api/users/' + user_id).send({
         image_id: 2
       });
 

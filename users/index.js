@@ -84,6 +84,13 @@ server.put('/:id', authenticate, async (req, res) => {
 
     }
 
+    if (user.id !== decoded.subject) {
+
+      res.status(403).json({message: 'You cannot modify another users data'});
+      return;
+
+    }
+
     await db.update({ image_id }).from('users').where({ id });
 
     returnAllUsers(res);

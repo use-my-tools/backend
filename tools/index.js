@@ -9,7 +9,9 @@ const returnAllTools = async (req, res) => {
 
   try {
 
-    let tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.subject);
+    let tools = await db.select().from('tools').orderBy('id', 'desc').where('owner_id', req.decoded.user.id);
+
+    console.log('USERID',req.decoded.user.id);
 
     const results = tools.map(async (tool) => {
 

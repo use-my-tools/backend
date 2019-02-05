@@ -30,7 +30,7 @@ const returnAllTools = async (req, res) => {
   catch (err) {
 
     console.log(err);
-    res.status(500).json({message: 'internal server error'});
+    res.status(500).json({message: err});
 
   }
 

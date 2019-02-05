@@ -93,7 +93,7 @@ server.get('/user/:id', async (req, res) => {
     });
 
     Promise.all(results).then(completed => {
-      tools = completed;
+      tools.data = completed;
       res.status(200).json(tools);
     });
 

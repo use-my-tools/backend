@@ -117,7 +117,7 @@ server.post('/login', async (req, res) => {
 
   try {
 
-    const user = await db.select('u.username', 'u.password', 'u.id as user_id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.username', username).first();
+    const user = await db.select('u.username', 'u.password', 'u.id', 'u.firstname', 'u.lastname', 'i.url as image_url').from('users as u').join('images as i', 'u.image_id', '=', 'i.id').where('u.username', username).first();
 
     if (user) {
 
@@ -128,7 +128,7 @@ server.post('/login', async (req, res) => {
         const token = await generateToken(user);
 
         res.status(200).json({
-          user_id: user.user_id,
+          user_id: user.id,
           username: user.username,
           image_url: user.image_url,
           firstname: user.firstname,

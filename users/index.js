@@ -62,6 +62,11 @@ server.get('/:id', authenticate, async (req, res) => {
 
     }
 
+    const reviews = await db.select().from('reviews').where({ for_user: user.id });
+
+    user.reviews = reviews;
+    user.stars = 0.0 + reviews.reduce((acc, val) => acc += val.stars, 0) / reviews.length || 0;
+
     res.status(200).json(user);
 
   }

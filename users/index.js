@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 
 const { authenticate } = require('../common/authentication');
 const db = require('../data/db');
@@ -82,11 +83,11 @@ server.get('/:id', authenticate, async (req, res) => {
 server.put('/:id', authenticate, async (req, res) => {
 
   const { id } = req.params;
-  const { image_id } = req.body;
+  const { image_id, password } = req.body;
 
-  if (!image_id) {
+  if (!image_id && !password) {
 
-    res.status(400).json({message: 'No image ID provided'});
+    res.status(400).json({message: 'No data provided'});
     return;
 
   }
@@ -109,7 +110,15 @@ server.put('/:id', authenticate, async (req, res) => {
 
     }
 
-    await db.update({ image_id }).from('users').where({ id });
+    if (image_id)
+      await db.update({ image_id }).from('users').where({ id });
+
+    if (password) {
+
+      const hashed = await bcrypt.hash(password, 1);
+      await db.update({ password: hashed }).from('users').where({ id });
+
+    }
 
     returnAllUsers(res);
 

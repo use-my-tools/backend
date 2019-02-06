@@ -253,7 +253,10 @@ server.post('/:id/rent', authenticate, async (req, res) => {
     }
 
     await db.update({isAvailable: false, rented_by: req.decoded.user.id}).from('tools').where({ id });
-    returnAllTools(req, res);
+
+    const tool = await db.select().from('tools').where({ id }).first();
+
+    res.status(200).json(tool);
 
   }
 

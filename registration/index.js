@@ -168,8 +168,6 @@ server.post('/passwordreset', async (req, res) => {
     let hashed = await bcrypt.hash(password, 1);
     await db.update('password', hashed).from('users').where({id: user.id});
 
-    console.log('changed');
-
     const smtpTransport = mailer.createTransport({
       service: "Gmail",
       auth: {
@@ -185,8 +183,6 @@ server.post('/passwordreset', async (req, res) => {
         text: `We've reset your password! Your new password is: ${password}. Please change it as soon as you can!`
     }
 
-    console.log('before send');
-
     smtpTransport.sendMail(mail, function(error, response){
         if(error){
             console.log(error);
@@ -197,8 +193,6 @@ server.post('/passwordreset', async (req, res) => {
 
         smtpTransport.close();
     });
-
-    console.log('after send');
 
     res.status(200).json({message: "email sent"});
 

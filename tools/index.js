@@ -1,4 +1,5 @@
 const express = require('express');
+const mailer = require('nodemailer');
 
 const { authenticate } = require('../common/authentication');
 const db = require('../data/db');
@@ -265,6 +266,35 @@ server.post('/:id/rent', authenticate, async (req, res) => {
     }
 
     await db.update({isAvailable: false, rented_by: req.decoded.user.id}).from('tools').where({ id });
+
+    const toolOwner = await db.select().from('users').where({id: tool.owner_id}).first();
+    const requesting = await db.select().from('users').where({id: req.decoded.user.id}).first();
+
+    const smtpTransport = mailer.createTransport({
+      service: "Gmail",
+      auth: {
+          user: "usemytoolsemailer@gmail.com",
+          pass: "usemytools42069"
+      }
+    });
+
+    var mail = {
+        from: "Use My Tools <usemytoolsemailer@gmail.com>",
+        to: toolOwner.email,
+        subject: "Someone's renting your tool",
+        text: `Hey there ${toolOwner.firstname}! A user is trying to rent your ${tool.name}. Here is their information: username: ${requesting.username} email: ${requesting.email}`
+    }
+
+    smtpTransport.sendMail(mail, function(error, response){
+        if(error){
+            console.log(error);
+            res.status(500).json({message: 'Email did not send'});
+        }else{
+            console.log("Message sent!");
+        }
+
+        smtpTransport.close();
+    });
 
     tool = await db.select().from('tools').where({ id }).first();
 

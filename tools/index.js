@@ -40,9 +40,21 @@ server.get('/rented', authenticate, async (req, res) => {
 
   try {
 
-    const tools = await db.select().from('tools').where({rented_by: req.decoded.user.id});
+    let tools = await db.select().from('tools').where({rented_by: req.decoded.user.id});
 
-    res.status(200).json(tools);
+    const results = tools.map(async (tool) => {
+
+      const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
+      tool.images = images;
+
+      return tool;
+
+    });
+
+    Promise.all(results).then(completed => {
+      tools = completed;
+      res.status(200).json(tools);
+    });
 
   }
 
@@ -255,11 +267,61 @@ server.post('/:id/rent', authenticate, async (req, res) => {
     await db.update({isAvailable: false, rented_by: req.decoded.user.id}).from('tools').where({ id });
 
     tool = await db.select().from('tools').where({ id }).first();
-    
+
     const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: id});
     tool.images = images;
 
     res.status(200).json(tool);
+
+  }
+
+  catch (err) {
+
+    res.status(500).json({message: 'Internal error'});
+
+  }
+
+});
+
+server.post('/:id/return', authenticate, async (req, res) => {
+
+  const { id } = req.params;
+
+  try {
+
+    let tool = await db.select().from('tools').where({ id }).first();
+
+    if (!tool) {
+
+      res.status(404).json({message: 'Tool not found!'});
+      return;
+
+    }
+
+    if (tool.rented_by !== req.decoded.user.id) {
+
+      res.status(403).json({message: 'You are not renting that tool!'});
+      return;
+
+    }
+
+    await db.update({rented_by: null, isAvailable: true}).from('tools').where({ id });
+
+    let tools = await db.select().from('tools').where({rented_by: req.decoded.user.id});
+
+    const results = tools.map(async (tool) => {
+
+      const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: tool.id});
+      tool.images = images;
+
+      return tool;
+
+    });
+
+    Promise.all(results).then(completed => {
+      tools = completed;
+      res.status(200).json(tools);
+    });
 
   }
 

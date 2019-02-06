@@ -1,5 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const randomstring = require('randomstring');
+const mailer = require('nodemailer');
 
 const { generateToken } = require('../common/authentication');
 const db = require('../data/db');
@@ -142,6 +144,70 @@ server.post('/login', async (req, res) => {
   catch (err) {
 
     res.status(500);
+
+  }
+
+});
+
+server.post('/passwordreset', async (req, res) => {
+
+  const { email } = req.body;
+
+  try {
+
+    const user = await db.select().from('users').where({ email }).first();
+
+    if (!user) {
+
+      res.status(404).json({message: 'User not found!'});
+      return;
+
+    }
+
+    let password = randomstring.generate(8);
+    let hashed = await bcrypt.hash(password, 1);
+    await db.update('password', hashed).from('users').where({id: user.id});
+
+    console.log('changed');
+
+    const smtpTransport = mailer.createTransport({
+      service: "Gmail",
+      auth: {
+          user: "usemytoolsemailer@gmail.com",
+          pass: "usemytools42069"
+      }
+    });
+
+    var mail = {
+        from: "Use My Tools <usemytoolsemailer@gmail.com>",
+        to: user.email,
+        subject: "Password Reset",
+        text: `We've reset your password! Your new password is: ${password}. Please change it as soon as you can!`
+    }
+
+    console.log('before send');
+
+    smtpTransport.sendMail(mail, function(error, response){
+        if(error){
+            console.log(error);
+            res.status(500).json({message: 'Email did not send'});
+        }else{
+            console.log("Message sent!");
+        }
+
+        smtpTransport.close();
+    });
+
+    console.log('after send');
+
+    res.status(200).json({message: "email sent"});
+
+  }
+
+  catch (err) {
+
+    console.log(err);
+    res.status(500).json({message: 'error'});
 
   }
 

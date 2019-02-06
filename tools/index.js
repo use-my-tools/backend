@@ -236,7 +236,7 @@ server.post('/:id/rent', authenticate, async (req, res) => {
 
   try {
 
-    const tool = await db.select().from('tools').where({ id }).first();
+    let tool = await db.select().from('tools').where({ id }).first();
 
     if (!tool) {
 
@@ -254,7 +254,7 @@ server.post('/:id/rent', authenticate, async (req, res) => {
 
     await db.update({isAvailable: false, rented_by: req.decoded.user.id}).from('tools').where({ id });
 
-    const tool = await db.select().from('tools').where({ id }).first();
+    tool = await db.select().from('tools').where({ id }).first();
 
     res.status(200).json(tool);
 

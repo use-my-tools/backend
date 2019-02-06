@@ -36,6 +36,24 @@ const returnAllTools = async (req, res) => {
 
 }
 
+server.get('/rented', authenticate, async (req, res) => {
+
+  try {
+
+    const tools = await db.select().from('tools').where({rented_by: req.decoded.user.id});
+
+    res.status(200).json(tools);
+
+  }
+
+  catch (err) {
+
+    res.status(500).json({message: 'Internal error'});
+
+  }
+
+});
+
 server.get('/', async (req, res) => {
 
   const count = req.query.count || 10;
@@ -207,6 +225,41 @@ server.post('/', authenticate, async (req, res) => {
 
     console.log(err);
     res.status(500).json({message: err.message});
+
+  }
+
+});
+
+server.post('/:id/rent', authenticate, async (req, res) => {
+
+  const { id } = req.params;
+
+  try {
+
+    const tool = await db.select().from('tools').where({ id }).first();
+
+    if (!tool) {
+
+      res.status(404).json({message: 'Tool not found!'});
+      return;
+
+    }
+
+    if (!tool.isAvailable) {
+
+      res.status(400).json({message: 'That tool is already being rented by someone'});
+      return;
+
+    }
+
+    await db.update({isAvailable: false, rented_by: req.decoded.user.id}).from('tools').where({ id });
+    returnAllTools(req, res);
+
+  }
+
+  catch (err) {
+
+    res.status(500).json({message: 'Internal error'});
 
   }
 

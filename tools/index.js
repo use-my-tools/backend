@@ -40,11 +40,18 @@ server.get('/', async (req, res) => {
 
   const count = req.query.count || 10;
   const page = req.query.page || 1;
+  const name = req.query.name;
 
   try {
 
     //const tools = await db.select('t.*', 'i.url').from('tools as t').join('tool_images as ti', 'ti.tool_id', 't.id').join('images as i', 'ti.img_id', 'i.id').paginate(count, page, true);
-    const tools = await db.select().from('tools').orderBy('id', 'desc').paginate(count, page, true);
+    let tools;
+
+    if (!name)
+      tools = await db.select().from('tools').orderBy('id', 'desc').paginate(count, page, true);
+
+    else
+      tools = await db.select().from('tools').orderBy('id', 'desc').where('name', 'like', `%${name}%`).paginate(count, page, true);
 
     tools.currentPage = Number(tools.currentPage);
 

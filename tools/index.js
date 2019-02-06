@@ -255,6 +255,9 @@ server.post('/:id/rent', authenticate, async (req, res) => {
     await db.update({isAvailable: false, rented_by: req.decoded.user.id}).from('tools').where({ id });
 
     tool = await db.select().from('tools').where({ id }).first();
+    
+    const images = await db.select('i.url').from('tool_images as ti').join('images as i', 'ti.img_id', 'i.id').where({tool_id: id});
+    tool.images = images;
 
     res.status(200).json(tool);
 

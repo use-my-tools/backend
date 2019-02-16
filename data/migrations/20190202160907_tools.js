@@ -14,6 +14,7 @@ exports.up = function(knex, Promise) {
     tbl.double('deposit').notNullable();
     tbl.boolean('isAvailable').notNullable();
     tbl.double('rating').notNullable();
+    tbl.integer('rented_by');
 
   });
 };

@@ -6,7 +6,8 @@ const generateToken = user => {
 
   const payload = {
 
-    subject: user.id
+    subject: user.id,
+    user: user
 
   }
 

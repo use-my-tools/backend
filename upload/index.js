@@ -30,19 +30,25 @@ server.post('/image', multipart, (req, res) => {
 
         if (!tool_id) {
 
-          const [id] = await db.insert({ url: result.url}).into('images');
+          await db.insert({ url: result.url}).into('images');
 
-          res.status(201).json({ id });
+          const image = await db.select().from('images').where('url', result.url).first();
+
+          res.status(201).json({ id: image.id });
 
         }
 
         else {
 
-          const [id] = await db.insert({ url: result.url}).into('images');
+          await db.insert({ url: result.url}).into('images');
 
-          await db.insert({img_id: id, tool_id}).into('tool_images');
+          const image = await db.select().from('images').where('url', result.url).first();
 
-          res.status(201).json({ id });
+          console.log(image.id);
+
+          await db.insert({img_id: image.id, tool_id}).into('tool_images');
+
+          res.status(201).json({ id: image.id });
 
         }
 
